@@ -10,14 +10,15 @@ function startup () {
 		extraButtonTitle: "Extra!", 
 		styles: undefined,
 		whereToAppend: $(".divPageBody"),
-		styles: ".divOutlineDialogTitle {color: green};",
+		styles: ".divOutlineDialogTitle {color: orange};",
 		divDialogStyles: "divDemoStyles",
-		opmltext: localStorage.savedOpmltext,
+		opmltext: undefined,
 		extraButtonCallback: function (opmltext) {
 			console.log ("extraButtonCallback: opmltext == " + opmltext);
 			},
 		afterOpenCallback: function () {
 			console.log ("afterOpenCallback");
+			opInsert ("Hello", down);
 			}
 		};
 	

@@ -4,15 +4,14 @@ function outlineDialog (userOptions, callback) {
 	var theConcordOutline, divOutlineDialog;
 	
 	const savedStuff = {
-		idOutliner: idDefaultOutliner,
-		styleNode: undefined
+		idOutliner: idDefaultOutliner
 		};
 	const options = {
 		title: "My outline dialog",
 		flReadOnly: false,
 		outlineFont: "Ubuntu",
-		outlineFontSize: 14,
-		outlineLineHeight: 20,
+		outlineFontSize: 16,
+		outlineLineHeight: 24,
 		idOutliner: "idOutlineDialogOutliner",
 		extraButtonTitle: undefined, 
 		styles: undefined,
@@ -25,34 +24,24 @@ function outlineDialog (userOptions, callback) {
 			}
 		};
 	for (var x in userOptions) {
-		options [x] = userOptions [x];
+		if (userOptions [x] !== undefined) {
+			options [x] = userOptions [x];
+			}
 		}
 	
-	function insertStyles () { 
-		var styleNode = document.createElement ("style");
-		var styleText = document.createTextNode (options.styles);
-		styleNode.type = "text/css";
-		styleNode.appendChild (styleText);
-		document.getElementsByTagName ("head") [0].appendChild (styleNode);
-		savedStuff.styleNode = styleNode; //so we can delete it later
-		}
 	function closeOutlineDialog (flSave) {
 		const opmltext = opOutlineToXml ();
 		idDefaultOutliner = savedStuff.idOutliner;
+		concord.handleEvents = false; //11/19/23 by DW
 		
 		divOutlineDialog.modal ("hide"); 
-		if (savedStuff.styleNode !== undefined) { //delete if it exists
-			setTimeout (function () { //2/27/16 by DW -- wait a second before deleting styles, give dialog a chance to be hidden
-				document.getElementsByTagName ("head") [0].removeChild (savedStuff.styleNode);
-				delete savedStuff.styleNode;
-				}, 1000);
-			}
+		divOutlineDialog.on ("hidden.bs.modal", function () {
+			divContainer.remove ();
+			});
 		
 		if (callback !== undefined) {
 			callback (flSave, opmltext);
 			}
-		
-		concord.handleEvents = false; //11/19/23 by DW
 		}
 	function cancelOutlineDialog () {
 		closeOutlineDialog (false);
@@ -80,7 +69,8 @@ function outlineDialog (userOptions, callback) {
 		divOutlineDialog.append (modalBody);
 		
 		const modalFooter = $("<div class=\"modal-footer\"></div>");
-		const saveButton = $("<a href=\"#\" class=\"btn\">Save</a>");
+		const saveButtonText = (options.flReadOnly) ? "OK" : "Save";
+		const saveButton = $("<a href=\"#\" class=\"btn\">" + saveButtonText + "</a>");
 		
 		if (options.extraButtonTitle !== undefined) {
 			const extraButton = $("<a href=\"#\" class=\"btn extraBtn\">" + options.extraButtonTitle + "</a>");
@@ -111,6 +101,13 @@ function outlineDialog (userOptions, callback) {
 		divContainer.append (divOutlineDialog);
 		return (divContainer);
 		}
+	function insertStyles () { 
+		var styleNode = document.createElement ("style");
+		var styleText = document.createTextNode (options.styles);
+		styleNode.type = "text/css";
+		styleNode.appendChild (styleText);
+		document.getElementsByTagName ("head") [0].appendChild (styleNode);
+		}
 	
 	const divContainer = setupDomStructure ();
 	options.whereToAppend.append (divContainer);
@@ -123,14 +120,13 @@ function outlineDialog (userOptions, callback) {
 		outlineLineHeight: options.outlineLineHeight,
 		};
 	opInitOutliner (options.opmltext, getBoolean (options.flReadOnly), undefined, undefined, outlinerOptions);
+	options.afterOpenCallback ();
 	
 	insertStyles ();
 	
 	divOutlineDialog.modal ("show");
 	divOutlineDialog.on ("shown", function () {
-		theConcordOutline.focus (); 
 		concord.handleEvents = true; 
+		theConcordOutline.focus (); 
 		});
-	
-	options.afterOpenCallback ();
 	}
