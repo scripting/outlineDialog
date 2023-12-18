@@ -35,7 +35,8 @@ function outlineDialog (userOptions, callback) {
 		concord.handleEvents = false; //11/19/23 by DW
 		
 		divOutlineDialog.modal ("hide"); 
-		divOutlineDialog.on ("hidden.bs.modal", function () {
+		divOutlineDialog.on ("hidden", function () {
+			console.log ("hidden");
 			divContainer.remove ();
 			});
 		
@@ -101,6 +102,12 @@ function outlineDialog (userOptions, callback) {
 		divContainer.append (divOutlineDialog);
 		return (divContainer);
 		}
+	function cleanUpOldOutlineDialogs () {
+		$(".divOutlineDialog").remove ();
+		if (options.divDialogStyles !== undefined) {
+			$("." + options.divDialogStyles).remove ();
+			}
+		}
 	function insertStyles () { 
 		var styleNode = document.createElement ("style");
 		var styleText = document.createTextNode (options.styles);
@@ -108,6 +115,8 @@ function outlineDialog (userOptions, callback) {
 		styleNode.appendChild (styleText);
 		document.getElementsByTagName ("head") [0].appendChild (styleNode);
 		}
+	
+	cleanUpOldOutlineDialogs ();
 	
 	const divContainer = setupDomStructure ();
 	options.whereToAppend.append (divContainer);
