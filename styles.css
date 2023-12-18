@@ -1,0 +1,16 @@
+.divOutlineDialog .modal-header {
+	min-height: 20px;
+	}
+.divOutlineDialog .divOutlineDialogTitle {
+	font-size: 18px;
+	font-weight: bold;
+	}
+.divOutlineDialog .btn {
+	width: 50px; 
+	margin-left: 5px;
+	}
+.divOutlineDialog .extraBtn {
+	width: 50px; 
+	margin-left: 5px; 
+	float: left; 
+	}
